@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+build
+vendor
+storage
+public/storage
+public/build
+dist
