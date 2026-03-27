@@ -22,10 +22,13 @@
 .env.production.local
 
 # QUY TẮC PHỦ QUYẾT (Whitelist): Luôn hiển thị file mẫu .example
-!*.example
-!*.example.*
+!.env.example
+!.env.local.example
 
 # File hệ thống
 .DS_Store
 Thumbs.db
 *.log
+
+# Bỏ qua phần mềm trợ lực (Cloudflared)
+cloudflared.exe
