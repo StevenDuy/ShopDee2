@@ -1,0 +1,270 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #050505;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: white;
+  padding: 1.5rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.modal {
+  max-width: 28rem;
+  width: 100%;
+  background-color: white;
+  color: black;
+  border-radius: 40px;
+  padding: 3rem;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeInZoom 0.5s ease-out;
+}
+
+@keyframes fadeInZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.headerIcon {
+  width: 4rem;
+  height: 4rem;
+  background-color: #F5F5F7;
+  border-radius: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #EBEBEB;
+}
+
+.emoji {
+  font-size: 1.5rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: black;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: #86868B;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.contentContainer {
+  width: 100%;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dotContainer {
+  margin-top: 0.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 113, 227, 0.1);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: #0071E3;
+  border-radius: 50%;
+}
+
+.infoText {
+  color: #1D1D1F;
+  font-size: 0.875rem;
+  line-height: 1.625;
+}
+
+.linkStyle {
+  font-weight: 600;
+  color: black;
+  font-style: italic;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: #F5F5F7;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 2rem;
+  user-select: none;
+}
+
+.checkboxContainer:hover {
+  background-color: #F2F2F2;
+}
+
+.checkboxWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+
+.hiddenCheckbox {
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border: 1px solid #D2D2D7;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.hiddenCheckbox:checked {
+  background-color: #0071E3;
+  border-color: #0071E3;
+}
+
+.checkIcon {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  color: white;
+  pointer-events: none;
+}
+
+.checkboxLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1D1D1F;
+}
+
+.alertBox {
+  padding: 1.5rem;
+  background-color: #FFF4E5;
+  border-radius: 1rem;
+  border: 1px solid #FFE7C8;
+}
+
+.alertText {
+  color: #A35200;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.successBox {
+  text-align: center;
+  padding: 1.5rem;
+  background-color: #EDFBF3;
+  border-radius: 2rem;
+  border: 1px solid #D0F2E0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.errorBox {
+  padding: 1rem;
+  background-color: #FFF1F1;
+  border: 1px solid #FFD9D9;
+  border-radius: 1rem;
+  color: #CE1D1D;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+}
+
+.buttonPrimary {
+  background-color: black;
+  color: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.buttonPrimary:hover {
+  background-color: #222;
+}
+
+.buttonPrimary:active {
+  transform: scale(0.98);
+}
+
+.buttonDisabled {
+  background-color: #F5F5F7;
+  color: #D2D2D7;
+  cursor: not-allowed;
+  border: 1px solid #EBEBEB;
+}
+
+.buttonGps {
+  background-color: #0071E3;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 113, 227, 0.2);
+}
+
+.buttonGps:hover {
+  background-color: #0077ED;
+}
+
+.disclaimer {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.disclaimerText {
+  color: #86868B;
+  font-size: 10px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
