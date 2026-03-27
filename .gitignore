@@ -1,13 +1,31 @@
+# Cấu hình Bỏ qua (Ignore) cho ShopDee2
+
+# Frontend (Next.js)
 /frontend/node_modules
 /frontend/.next/
 /frontend/out/
 /frontend/build/
+
+# Backend (Laravel)
 /backend/vendor/
 /backend/public/build/
 /backend/public/hot
 /backend/public/storage
 /backend/storage/*.key
-/.env
-/.env.*.local
+
+# Quy tắc chặn file môi trường thật (Sẽ không đẩy lên Git)
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# QUY TẮC PHỦ QUYẾT (Whitelist): Luôn hiển thị file mẫu .example
+!*.example
+!*.example.*
+
+# File hệ thống
 .DS_Store
+Thumbs.db
 *.log
