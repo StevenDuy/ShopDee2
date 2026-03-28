@@ -32,3 +32,7 @@ Thumbs.db
 
 # Bỏ qua phần mềm trợ lực (Cloudflared)
 cloudflared.exe
+
+# Bỏ qua cấu hình tunnel cá nhân (chứa credentials path)
+# Mỗi máy sẽ tự tạo file này theo hướng dẫn README
+# cloudflare-config.yml  ← (bỏ comment nếu muốn share config ra team)

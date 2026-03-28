@@ -91,7 +91,7 @@ export default async function RootLayout({
   const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/p-check`, { 
+    const res = await fetch(`${process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL}/api/p-check`, { 
       cache: 'no-store',
       signal: controller.signal
     });
