@@ -1,183 +1,119 @@
-# 🚀 SHOPDEE 2.0 — HƯỚNG DẪN CÀI ĐẶT & KHỞI ĐỘNG ĐẦY ĐỦ
+# 🚀 SHOPDEE 2.0 - SMART LOGISTICS AI SANDBOX
+
+Chào mừng bạn đến với dự án **ShopDee 2.0**. Đây là một nền tảng Thương mại điện tử & Logistics 5-trong-1 được thiết kế phục vụ nghiên cứu hành vi AI.
+
+Tài liệu này hướng dẫn chi tiết cách triển khai hệ thống từ đầu trên máy tính cá nhân (Windows/MacOS/Linux) và trỏ ra internet bằng **Cloudflare Tunnel** (Domain riêng).
 
 ---
 
-## 📋 GIAI ĐOẠN 1: CÀI ĐẶT CÔNG CỤ CẦN THIẾT
+## 📋 GIAI ĐOẠN 1: CÔNG CỤ CẦN THIẾT (Environment Setup)
 
-Cài lần đầu, sau đó không cần làm lại.
+Trước khi bắt đầu, hãy đảm bảo máy bạn đã cài:
 
-| Công cụ | Tải tại | Ghi chú |
-|---|---|---|
-| **XAMPP** | https://www.apachefriends.org | Bật Apache + MySQL |
-| **Node.js** | https://nodejs.org | Chọn bản LTS |
-| **Composer** | https://getcomposer.org | Quản lý PHP packages |
+1. **XAMPP**: Cần Apache & MySQL 8.0+.
+2. **Node.js**: Phiên bản LTS (v20+).
+3. **Composer**: Công cụ quản lý thư viện PHP.
+4. **Git**: Để quản lý mã nguồn.
 
 ---
 
-## 🔐 GIAI ĐOẠN 2: CẤU HÌNH CLOUDFLARE TUNNEL (Làm 1 lần duy nhất)
+## 🔑 GIAI ĐOẠN 2: CỐ TRÚC API & MÔI TRƯỜNG
 
-> Đây là bước quan trọng nhất. Làm đúng thì domain `shopdee.io.vn` sẽ hoạt động vĩnh viễn.
+Hệ thống sử dụng các file `.env` để quản lý cấu hình. Bạn cần tạo chúng từ file mẫu.
 
-### Bước 2.1 — Tải cloudflared.exe
+### 1. Backend (`/backend/.env`)
+- Copy file `.env.example` -> `.env`.
+- Cấu hình Database: `DB_DATABASE=shopdee2`, `DB_USERNAME=root`, `DB_PASSWORD=`.
+- Cấu hình API Keys (Pusher, Cloudinary, ZaloPay, Google OAuth, Mail SMTP).
 
-Chạy lệnh này tại thư mục gốc dự án (`ShopDee2/`):
+### 2. Frontend (`/frontend/.env.local`)
+- Copy file `.env.local.example` -> `.env.local`.
+- `NEXT_PUBLIC_API_URL`: Điền domain API của bạn (Ví dụ: `https://api.domain.com`).
+- `BACKEND_INTERNAL_URL`: Điền `http://localhost:8000` (Dùng để server gọi nội bộ, fix lỗi timeout).
+- Điền Key Google OAuth và Key Pusher.
 
-```powershell
-curl.exe -L -o cloudflared.exe "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"
-```
+---
 
-> ⚠️ Phải dùng `curl.exe` (có `.exe`) trong PowerShell, không phải `curl`.
+## 🌐 GIAI ĐOẠN 3: TỰ HOST WEB CÁ NHÂN (Cloudflare Tunnel)
 
-### Bước 2.2 — Đăng nhập Cloudflare
+Để web chạy được trên Internet từ máy cá nhân mà không cần thuê Server/VPS, hãy thực hiện các bước sau:
 
-```powershell
-.\cloudflared.exe tunnel login
-```
+### Bước 1: Chuẩn bị Domain
+- Bạn cần một tên miền đã được đấu nối vào **Cloudflare** (Ví dụ: `domain.com`).
 
-Trình duyệt sẽ tự mở → Đăng nhập tài khoản Cloudflare → Chọn domain `shopdee.io.vn` → Bấm **Authorize**.
+### Bước 2: Cài đặt Cloudflared
+Mở Terminal tại thư mục gốc của dự án và tải công cụ CLI của Cloudflare:
+- **Windows**: `curl.exe -L -o cloudflared.exe "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"`
+- **MacOS**: `brew install cloudflare/cloudflare/cloudflared`
 
-### Bước 2.3 — Tạo Named Tunnel
+### Bước 3: Đăng nhập & Tạo Tunnel
+1. `.\cloudflared.exe tunnel login`: Trình duyệt sẽ mở, bạn hãy chọn tên miền của mình và bấm **Authorize**.
+2. `.\cloudflared.exe tunnel create shopdee-v2`: Lệnh này sẽ tạo ra một **Tunnel ID** duy nhất. Hãy ghi lại ID này.
 
-```powershell
-.\cloudflared.exe tunnel create shopdee-v2
-```
-
-Sau lệnh này, terminal sẽ in ra một dòng có chứa **Tunnel ID** dạng:
-```
-Created tunnel shopdee-v2 with id bdeb1e42-e864-4db2-ac8f-34db3f682022
-```
-Lưu lại Tunnel ID này. File credentials được tự tạo tại `C:\Users\<TÊN_MÁY>\.cloudflared\<TUNNEL_ID>.json`.
-
-### Bước 2.4 — Tạo file cloudflare-config.yml
-
-Tạo file `cloudflare-config.yml` tại thư mục gốc dự án với nội dung sau (thay `<TUNNEL_ID>` và `<TÊN_MÁY>` theo thực tế):
-
+### Bước 4: Tạo cấu hình Tunnel
+Tạo file `cloudflare-config.yml` ở thư mục gốc dự án:
 ```yaml
-tunnel: <TUNNEL_ID>
-credentials-file: C:\Users\<TÊN_MÁY>\.cloudflared\<TUNNEL_ID>.json
+tunnel: YOUR_TUNNEL_ID_HERE
+credentials-file: C:\Users\YOUR_USERNAME\.cloudflared\YOUR_TUNNEL_ID_HERE.json
 
 ingress:
-  - hostname: shopdee.io.vn
+  - hostname: YOUR_DOMAIN.COM
     service: http://localhost:3000
-  - hostname: api.shopdee.io.vn
+  - hostname: api.YOUR_DOMAIN.COM
     service: http://localhost:8000
   - service: http_status:404
 ```
 
-**Ví dụ thực tế của máy này:**
-```yaml
-tunnel: bdeb1e42-e864-4db2-ac8f-34db3f682022
-credentials-file: C:\Users\duyh1\.cloudflared\bdeb1e42-e864-4db2-ac8f-34db3f682022.json
-
-ingress:
-  - hostname: shopdee.io.vn
-    service: http://localhost:3000
-  - hostname: api.shopdee.io.vn
-    service: http://localhost:8000
-  - service: http_status:404
-```
-
-### Bước 2.5 — Gắn DNS records vào Cloudflare
-
+### Bước 5: Trỏ DNS (Làm 1 lần)
+Chạy 2 lệnh này để Cloudflare tự động tạo DNS records (CNAME) trỏ về máy bạn:
 ```powershell
-.\cloudflared.exe tunnel route dns --overwrite-dns shopdee-v2 shopdee.io.vn
-.\cloudflared.exe tunnel route dns --overwrite-dns shopdee-v2 api.shopdee.io.vn
-```
-
-Mỗi lệnh thành công sẽ in ra:
-```
-INF Added CNAME shopdee.io.vn -> bdeb1e42-...cfargotunnel.com
-```
-
-### Bước 2.6 — Xác nhận DNS trên Cloudflare Dashboard
-
-Vào **https://dash.cloudflare.com** → domain `shopdee.io.vn` → **DNS** → Kiểm tra:
-
-| Type | Name | Target | Proxy |
-|---|---|---|---|
-| CNAME | `@` | `<TUNNEL_ID>.cfargotunnel.com` | ☁️ Proxied |
-| CNAME | `api` | `<TUNNEL_ID>.cfargotunnel.com` | ☁️ Proxied |
-
-> ❌ **Nếu thấy target trỏ về `.trycloudflare.com`**: Xóa record đó và tạo lại thủ công với target đúng.
-> ❌ **Nếu có Workers & Pages cũ**: Vào **Workers & Pages** → Xóa hết → Vào **Caching → Purge Everything**.
-
----
-
-## 🛡️ GIAI ĐOẠN 3: CẤU HÌNH CÁC API BẮT BUỘC (.env)
-
-Sao chép `backend/.env.example` thành `backend/.env` và điền đầy đủ.
-
-> *(Thiếu bất kỳ API nào → Backend từ chối khởi động theo cơ chế bảo vệ tự động.)*
-
-| Biến | Lấy ở đâu |
-|---|---|
-| `GOOGLE_CLIENT_ID` / `SECRET` | Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID |
-| `MAIL_USERNAME` / `MAIL_PASSWORD` | Tài khoản Google → Bảo mật → App Passwords (16 ký tự) |
-| `PUSHER_APP_ID` / `KEY` / `SECRET` | pusher.com → Tạo app → Tab **App Keys** |
-| `CLOUDINARY_*` | cloudinary.com → Dashboard → **API Environment variable** |
-| `ZALOPAY_*` | ZaloPay Sandbox → Tạo Merchant Test → AppID + Key1 + Key2 |
-
-Với **Frontend**: Sao chép `frontend/.env.local.example` thành `frontend/.env.local` và điền:
-- `NEXT_PUBLIC_PUSHER_APP_KEY`
-- `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
-- `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`
-
----
-
-## 🏗️ GIAI ĐOẠN 4: KHỞI TẠO DỮ LIỆU (Chỉ làm 1 lần đầu)
-
-### Terminal 1 — Cài Backend
-
-```powershell
-cd backend
-composer install
-php artisan key:generate
-php artisan migrate --seed
-```
-
-### Terminal 2 — Cài Frontend
-
-```powershell
-cd frontend
-npm install
+.\cloudflared.exe tunnel route dns shopdee-v2 YOUR_DOMAIN.COM
+.\cloudflared.exe tunnel route dns shopdee-v2 api.YOUR_DOMAIN.COM
 ```
 
 ---
 
-## ▶️ GIAI ĐOẠN 5: KHỞI ĐỘNG HỆ THỐNG (Mỗi lần làm việc)
+## 🏗️ GIAI ĐOẠN 4: KHỞI TẠO DỮ LIỆU
 
-**Trước tiên:** Mở XAMPP Control Panel → Bấm **Start** cho `Apache` và `MySQL`.
+1. **Khởi tạo Database**: Truy cập `http://localhost/phpmyadmin` và tạo database tên `shopdee2`.
+2. **Cài đặt Backend**:
+   ```powershell
+   cd backend
+   composer install
+   php artisan key:generate
+   php artisan migrate --seed
+   ```
+3. **Cài đặt Frontend**:
+   ```powershell
+   cd frontend
+   npm install
+   ```
 
-Sau đó chỉ cần chạy **1 lệnh duy nhất** tại thư mục gốc:
+---
 
+## ▶️ GIAI ĐOẠN 5: CHẠY HỆ THỐNG
+
+### Cách 1: Dùng script 1-click (Windows)
+Đảm bảo đã mở **XAMPP (Apache & MySQL)**, sau đó lùi ra thư mục gốc dự án và chạy:
 ```powershell
 .\start.ps1
 ```
+Script sẽ tự động mở 3 cửa sổ: Laravel, Next.js và Cloudflare Tunnel.
 
-Script tự động mở 3 cửa sổ Terminal riêng biệt:
-- 🔵 **Backend** — Laravel tại `localhost:8000`
-- 🟢 **Frontend** — Next.js tại `localhost:3000` *(chờ in ra `Ready` rồi mới vào web)*
-- 🟠 **Tunnel** — Cloudflare kết nối domain cố định
-
-### Địa chỉ truy cập sau khi khởi động:
-
-| Địa chỉ | Mô tả |
-|---|---|
-| `https://shopdee.io.vn` | Website chính (internet) |
-| `https://api.shopdee.io.vn` | API Backend (internet) |
-| `http://localhost:3000` | Frontend local |
-| `http://localhost:8000` | Backend local |
-
-> **Tài khoản Admin mặc định:** `admin@shopdee.com` / `password`
+### Cách 2: Chạy thủ công (Linux/MacOS)
+Bạn cần mở 3 tab Terminal:
+1. **Tab 1 (Backend)**: `cd backend && php artisan serve`
+2. **Tab 2 (Frontend)**: `cd frontend && npm run dev`
+3. **Tab 3 (Tunnel)**: `.\cloudflared.exe tunnel --config cloudflare-config.yml run`
 
 ---
 
-## ⚠️ XỬ LÝ LỖI THƯỜNG GẶP
+## 🆘 CỬA SỔ KHẮC PHỤC LỖI (Q&A)
 
-| Lỗi | Nguyên nhân | Cách fix |
-|---|---|---|
-| `API BACKEND ERROR` khi vào web | Laravel chưa chạy | Kiểm tra cửa sổ Terminal Backend, chờ nó khởi động xong |
-| `Error 524 Timeout` | Next.js chưa sẵn sàng | Chờ cửa sổ Terminal Frontend in ra `✓ Ready` |
-| `Error 1016 Origin DNS` | Worker cũ hoặc DNS sai | Xóa Workers & Pages, kiểm tra lại DNS CNAME trên Cloudflare |
-| Script bị chặn ExecutionPolicy | Windows bảo mật | Chạy 1 lần: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` |
-| Tunnel không connect | `cloudflare-config.yml` sai path | Kiểm tra `credentials-file` trỏ đúng file `.json` trong `C:\Users\<TÊN_MÁY>\.cloudflared\` |
+- **Lỗi Error 1016 (Origin DNS Error)**: Cloudflare không kết nối được tới máy bạn. Hãy kiểm tra xem Tab Tunnel đã in ra chữ `Connected` chưa. Nếu rồi mà vẫn lỗi, hãy vào Cloudflare DashBoard -> Caching -> Purge Everything.
+- **Lỗi API BACKEND ERROR**: Hãy đảm bảo bạn đã điền biến `BACKEND_INTERNAL_URL=http://localhost:8000` trong file `.env.local` của Frontend.
+- **Lỗi Cloudflare Worker**: Tuyệt đối không được bật Worker trên domain dùng cho Tunnel, nó sẽ chặn luồng dữ liệu.
+
+---
+
+Chúc bạn có những trải nghiệm nghiên cứu tuyệt vời cùng **ShopDee 2.0**!
