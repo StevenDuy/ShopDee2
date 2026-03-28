@@ -1,28 +1,62 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { sendTelemetry } from '@/lib/telemetry';
 
 /**
- * ULTRA-RESILIENT AUTH GATE (SSR + Vanilla + React Fallback)
- * This gate uses a Vanilla JS bridge to ensure its fully functional 
- * and persistent even if the Next.js bundle fails to load through a proxy.
+ * FINAL AI SANDBOX CONTROL NODE
+ * Injected with:
+ * 1. Vanilla JS Bypass for slow Tunnels.
+ * 2. Auto-GPS Sync (every 60s).
+ * 3. Visibility/Focus Tracking for Behavioral AI.
  */
 export default function RootClientWrapper({ children }: { children: React.ReactNode }) {
   const [authorized, setAuthorized] = useState(false);
 
   useEffect(() => {
-    // React fallback check
+    // 1. Initial Access Check
     if (localStorage.getItem('ai_research_accepted') === 'true') {
       setAuthorized(true);
+      
+      // 2. Start AI Behavioral Telemetry (Focus Tracking)
+      const handleVisibility = () => {
+        sendTelemetry({ 
+          type: 'VISIBILITY_CHANGE', 
+          payload: { state: document.visibilityState } 
+        });
+      };
+      document.addEventListener('visibilitychange', handleVisibility);
+
+      // 3. Start Periodic GPS Sync (Every 60s)
+      const gpsInterval = setInterval(() => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition((pos) => {
+            sendTelemetry({
+              type: 'GPS_TICK',
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              payload: { speed: pos.coords.speed, accuracy: pos.coords.accuracy }
+            });
+          });
+        }
+      }, 60000);
+
+      // Log initial session start
+      sendTelemetry({ type: 'SESSION_START' });
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibility);
+        clearInterval(gpsInterval);
+      };
     }
-  }, []);
+  }, [authorized]);
 
   return (
     <>
       <div id="v-auth-gate-root" style={{
         position: 'fixed', inset: 0, zIndex: 9999, backgroundColor: '#050505',
         alignItems: 'center', justifyContent: 'center', padding: '20px',
-        display: authorized ? 'none' : 'flex' /* React hide fallback */
+        display: authorized ? 'none' : 'flex'
       }}>
         <div style={{
           backgroundColor: 'white', color: 'black', width: '100%', maxWidth: '400px',
@@ -48,23 +82,17 @@ export default function RootClientWrapper({ children }: { children: React.ReactN
         </div>
       </div>
 
-      {/* VANILLA JS AUTO-UNLOCK SCRIPT */}
       <script dangerouslySetInnerHTML={{ __html: `
         (function() {
           const gate = document.getElementById('v-auth-gate-root');
           const main = document.getElementById('v-main-content');
-          
           function unlock() {
              if (gate) gate.style.display = 'none';
              if (main) main.style.display = 'block';
           }
-
-          // IMMEDIATE AUTO-UNLOCK (The secret sauce for slow tunnels)
           if (localStorage.getItem('ai_research_accepted') === 'true') {
-             unlock();
-             return;
+             unlock(); return;
           }
-
           const btn = document.getElementById('v-action-btn');
           const check = document.getElementById('v-terms-check');
           const errBox = document.getElementById('v-error');
@@ -72,10 +100,8 @@ export default function RootClientWrapper({ children }: { children: React.ReactN
           const content = document.getElementById('v-content');
           const icon = document.getElementById('v-icon');
           const checkArea = document.getElementById('v-checkbox-area');
-
           if (!btn || !check) return;
           let step = 1;
-
           btn.onclick = function() {
             if (step === 1) {
               if (!check.checked) return alert("Please accept the terms.");
@@ -101,7 +127,7 @@ export default function RootClientWrapper({ children }: { children: React.ReactN
         })();
       ` }} />
 
-      <div id="v-main-content" style={{ display: authorized ? 'block' : 'none' }}>
+      <div id="v-main-content" style={{ display: (authorized ? 'block' : 'none') }}>
         {children}
       </div>
     </>
