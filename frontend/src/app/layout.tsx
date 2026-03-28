@@ -136,9 +136,10 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col bg-black overflow-x-hidden">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-black overflow-x-hidden">
         <RootClientWrapper>
           {children}
         </RootClientWrapper>

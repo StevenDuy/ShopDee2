@@ -36,3 +36,6 @@ cloudflared.exe
 # Bỏ qua cấu hình tunnel cá nhân (chứa credentials path)
 # Mỗi máy sẽ tự tạo file này theo hướng dẫn README
 # cloudflare-config.yml  ← (bỏ comment nếu muốn share config ra team)
+gemini_history.md
+shopdee_architecture_2.md
+shopdee_old_analysis.md
