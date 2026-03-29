@@ -56,7 +56,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               <Plus className="w-3 h-3" /> Add Tier
             </Button>
           </div>
-          <p className="text-xs text-gray-400">Add up to 3 levels of variants (e.g. Color > Material > Size).</p>
+          <p className="text-xs text-gray-400">Add up to 3 levels of variants (e.g. Color &gt; Material &gt; Size).</p>
         </div>
 
         <div className="flex gap-4 pt-4">

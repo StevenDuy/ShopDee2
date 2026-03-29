@@ -20,6 +20,7 @@ class SocialController extends Controller {
             $f = env("FRONTEND_URL", "https://shopdee.io.vn");
 
             if ($user) {
+                $user->load('role');
                 return redirect($f . "/auth/callback?" . http_build_query([
                     "token" => $user->createToken("token")->plainTextToken,
                     "user" => urlencode(json_encode($user))
@@ -57,6 +58,8 @@ class SocialController extends Controller {
             "trust_score" => 100.0,
             "email_verified_at" => now(),
         ]);
+
+        $user->load('role');
 
         return response()->json([
             "user" => $user,

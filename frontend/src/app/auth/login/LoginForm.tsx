@@ -36,9 +36,13 @@ export default function LoginForm() {
         linehaul: "/linehaul",
       };
 
-      const target = roleRedirects[user.role.toLowerCase()] || "/";
+      // Safety check: user.role might be string (slug) or object (relationship)
+      const rawRole = typeof user?.role === 'string' ? user.role : user?.role?.name || 'customer';
+      const target = roleRedirects[rawRole.toLowerCase()] || "/";
+      
       router.push(target);
     } catch (err: any) {
+      console.error("Login Node Error:", err);
       setError(err.response?.data?.message || "Authentication failed.");
     } finally {
       setLoading(false);

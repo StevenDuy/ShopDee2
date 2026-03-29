@@ -28,10 +28,13 @@ function CallbackHandler() {
           linehaul: "/linehaul",
         };
 
-        const target = roleRedirects[user.role.toLowerCase()] || "/";
+        // Safety check: user.role might be string (slug) or object (relationship)
+        const rawRole = typeof user?.role === 'string' ? user.role : user?.role?.name || 'customer';
+        const target = roleRedirects[rawRole.toLowerCase()] || "/";
+        
         router.push(target);
       } catch (e) {
-        console.error("Auth Synchronicity Error:", e);
+        console.error("Auth Neural Sync Error:", e);
         router.push("/auth/login?error=sync_failed");
       }
     } else {

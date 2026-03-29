@@ -10,8 +10,10 @@ return new class extends Migration {
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('subtitle')->nullable();
             $table->string('image_url');
-            $table->string('link')->nullable();
+            $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('set null');
+            $table->string('link')->nullable(); // Optional external link fallback
             $table->enum('position', ['home_hero', 'sale_banner', 'popup', 'sidebar'])->default('home_hero');
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);

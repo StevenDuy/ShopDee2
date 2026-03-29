@@ -14,3 +14,23 @@ Route::post("/auth/google/complete", "App\\Http\\Controllers\\Auth\\SocialContro
 
 Route::post("/action-logs", "App\\Http\\Controllers\\Api\\ActionLogController@store");
 Route::get("/p-check", function() { return response()->json(["status"=>"ok"]); });
+
+// --- ADMIN API (Elite Governance) ---
+Route::group(['prefix' => 'admin'], function () {
+    // Products
+    Route::get('/products/search', "App\\Http\\Controllers\\Admin\\ProductController@search");
+
+    // Banners
+    Route::get('/banners', "App\\Http\\Controllers\\Admin\\BannerController@index");
+    Route::post('/banners', "App\\Http\\Controllers\\Admin\\BannerController@store");
+    Route::put('/banners/{id}', "App\\Http\\Controllers\\Admin\\BannerController@update");
+    Route::delete('/banners/{id}', "App\\Http\\Controllers\\Admin\\BannerController@destroy");
+    Route::patch('/banners/{id}/toggle', "App\\Http\\Controllers\\Admin\\BannerController@toggleStatus");
+
+    // Categories
+    Route::get('/categories', "App\\Http\\Controllers\\Admin\\CategoryController@index");
+    Route::get('/categories/flat', "App\\Http\\Controllers\\Admin\\CategoryController@getList");
+    Route::post('/categories', "App\\Http\\Controllers\\Admin\\CategoryController@store");
+    Route::put('/categories/{id}', "App\\Http\\Controllers\\Admin\\CategoryController@update");
+    Route::delete('/categories/{id}', "App\\Http\\Controllers\\Admin\\CategoryController@destroy");
+});

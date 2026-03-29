@@ -11,6 +11,7 @@ class AuthController extends Controller {
         $v = $request->validate(["email" => "required|email", "password" => "required"]);
         if (Auth::attempt($v)) {
             $user = Auth::user();
+            $user->load('role'); // Ensure role slug is loaded
             return response()->json(["user" => $user, "token" => $user->createToken("token")->plainTextToken]);
         }
         return response()->json(["message" => "Failed"], 401);
@@ -30,6 +31,7 @@ class AuthController extends Controller {
             "trust_score" => 100.0
         ]);
         $otpRecord->delete();
+        $user->load('role');
         return response()->json(["user" => $user, "token" => $user->createToken("token")->plainTextToken], 201);
     }
     public function resetPassword(Request $request) {
