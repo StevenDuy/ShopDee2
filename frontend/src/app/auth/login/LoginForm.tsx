@@ -51,37 +51,37 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleLogin} className="space-y-6">
-      <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Email Address</label>
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-6">Email Address</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-6 sm:px-8 py-4 sm:py-5 bg-white/[0.03] border border-white/[0.08] rounded-full font-medium text-sm text-white focus:outline-none focus:border-white/20 transition-all backdrop-blur-3xl"
+          className="input-standard px-6"
           placeholder="your@email.com"
           required
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Password</label>
-        <div className="relative">
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 px-6">Password</label>
+        <div className="flex gap-2 items-center">
           <input
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-6 sm:px-8 py-4 sm:py-5 pr-14 sm:pr-16 bg-white/[0.03] border border-white/[0.08] rounded-full font-medium text-sm text-white focus:outline-none focus:border-white/20 transition-all backdrop-blur-3xl"
+            className="input-standard flex-1 w-auto px-6"
             placeholder="••••••••"
             required
           />
           <button type="button" onClick={() => setShowPw(s => !s)}
-            className="absolute right-5 sm:right-6 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
-            {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            className="w-[60px] h-[60px] flex items-center justify-center bg-[#f5f5f7] rounded-[32px] text-gray-400 hover:text-black transition-colors shrink-0">
+            {showPw ? <EyeOff size={22} /> : <Eye size={22} />}
           </button>
         </div>
         <div className="flex justify-end px-6">
           <Link href="/auth/forgot-password" 
-            className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white transition-colors italic">
+            className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
             Lost Access?
           </Link>
         </div>
@@ -91,7 +91,7 @@ export default function LoginForm() {
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-[10px] font-black uppercase text-red-500 bg-red-500/10 border border-red-500/20 px-6 py-4 rounded-2xl text-center tracking-widest"
+          className="text-xs font-bold text-red-500 bg-red-50 border border-red-100 px-6 py-4 rounded-2xl text-center"
         >
           {error}
         </motion.div>
@@ -99,35 +99,35 @@ export default function LoginForm() {
 
       <div className="pt-2 space-y-4">
         <motion.button 
-          whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.9)" }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           type="submit" 
           disabled={loading}
-          className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-full flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all disabled:opacity-50"
+          className="button-standard button-primary w-full"
         >
-          {loading ? "Decrypting..." : <><LogIn size={18} /> Access Sandbox</>}
+          {loading ? "Decrypting..." : "Access Sandbox"}
         </motion.button>
 
         <div className="relative flex items-center gap-4 py-2">
-          <div className="h-px bg-white/5 flex-1"></div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/10 whitespace-nowrap italic">Neural Identity</span>
-          <div className="h-px bg-white/5 flex-1"></div>
+          <div className="h-px bg-gray-100 flex-1"></div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 whitespace-nowrap">Neural Identity</span>
+          <div className="h-px bg-gray-100 flex-1"></div>
         </div>
 
         <motion.button 
-          whileHover={{ scale: 1.01, backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+          whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
           type="button" 
           onClick={handleGoogleLogin}
-          className="w-full py-4 bg-transparent border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-full flex items-center justify-center gap-3 hover:border-white/20 transition-all"
+          className="button-standard button-outline w-full"
         >
-          <Globe size={16} className="text-blue-400" /> Continue with Google
+          Continue with Google
         </motion.button>
       </div>
 
       <div className="text-center pt-8">
-         <p className="text-[10px] font-black uppercase tracking-widest text-white/20 italic">
-           New Node? <Link href="/auth/register" className="text-white hover:underline underline-offset-4">Initialize Identity</Link>
+         <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+           New Node? <Link href="/auth/register" className="text-black hover:underline underline-offset-8">Initialize Identity</Link>
          </p>
       </div>
     </form>

@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { User, Store, Truck, Navigation, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
+import AuthWrapper from "../components/AuthWrapper";
 
 const roles = [
-  { id: "customer", label: "Customer", icon: <User className="w-8 h-8" />, desc: "Shopping in the neural economy" },
-  { id: "seller", label: "Seller", icon: <Store className="w-8 h-8" />, desc: "Managing supply nodes" },
-  { id: "shipper", label: "Shipper", icon: <Truck className="w-8 h-8" />, desc: "Local logistics execution" },
-  { id: "linehaul", label: "Linehaul", icon: <Navigation className="w-8 h-8" />, desc: "Long-range fleet driving" }
+  { id: "customer", label: "Customer", icon: User, desc: "Shopping in the neural economy" },
+  { id: "seller", label: "Seller", icon: Store, desc: "Managing supply nodes" },
+  { id: "shipper", label: "Shipper", icon: Truck, desc: "Local logistics execution" },
+  { id: "linehaul", label: "Linehaul", icon: Navigation, desc: "Long-range fleet driving" }
 ];
 
 function GoogleSetupForm() {
@@ -20,9 +21,10 @@ function GoogleSetupForm() {
   const [role, setRole] = useState("customer");
   const [loading, setLoading] = useState(false);
 
-  const email = searchParams.get("email");
-  const name = searchParams.get("name");
-  const googleId = searchParams.get("google_id");
+  const [email] = useState(searchParams.get("email"));
+  const [name] = useState(searchParams.get("name"));
+  const [googleId] = useState(searchParams.get("google_id"));
+  const [error, setError] = useState(false);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
@@ -32,69 +34,84 @@ function GoogleSetupForm() {
       return;
     }
     setLoading(true);
+    setError(false);
     try {
       const res = await axios.post(`${API_URL}/auth/google/complete`, {
         email, name, google_id: googleId, role
       });
-      // Login locally
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("token", res.data.token);
       toast.success("Identity established!");
       router.push(`/${res.data.user.role}`);
     } catch (err) {
+      setError(true);
       toast.error("Handshake failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!email) return <div className="text-white text-center">Neural Link Session Expired. Redirecting...</div>;
+  if (!email) return (
+    <div className="min-h-screen bg-white flex items-center justify-center p-12">
+      <div className="text-black text-center font-black uppercase tracking-widest text-xs italic">Neural Link Session Expired.</div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-transparent flex items-center justify-center p-6 sm:p-12 overflow-hidden selection:bg-blue-500/30">
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative z-10 w-full max-w-2xl bg-white/[0.03] backdrop-blur-3xl border border-white/[0.08] rounded-[48px] p-8 sm:p-12 shadow-2xl">
-        <div className="text-center mb-12">
-          <motion.div initial={{ y: -20 }} animate={{ y: 0 }} className="inline-flex items-center gap-2 px-6 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-black uppercase text-blue-400 tracking-widest mb-6 italic">
-            <ShieldCheck size={14} /> Identity Handshake Required
-          </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tighter mb-4 italic">Welcome, <span className="text-blue-400">{name?.split(" ")[0]}</span></h1>
-          <p className="text-white/40 text-xs sm:text-sm font-medium tracking-wide max-w-md mx-auto">Your Neural ID has been verified via Google. Select your identity within the ShopDee sandbox to finalize the protocol.</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {roles.map((r) => (
-            <button
-              key={r.id}
-              onClick={() => setRole(r.id)}
-              className={`p-6 rounded-[28px] border-2 text-left transition-all duration-300 group ${role === r.id
-                  ? "bg-blue-600/10 border-blue-400 text-white shadow-[0_0_30px_rgba(59,130,246,0.1)]"
-                  : "bg-white/[0.02] border-white/[0.05] text-white/30 hover:border-white/10"
+    <AuthWrapper 
+      title="Almost Home" 
+      subtitle={`Welcome, ${name?.split(" ")[0]}. One final step to calibrate your identity in the ShopDee sandbox.`}
+    >
+      <motion.div 
+        animate={error ? { x: [0, -10, 10, -10, 10, 0] } : {}}
+        transition={{ duration: 0.4 }}
+        className="space-y-8"
+      >
+        <div className="space-y-4">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Select Your Identity</label>
+          <div className="grid grid-cols-2 gap-3">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setRole(r.id)}
+                className={`p-6 rounded-[2.5rem] border-2 flex flex-col items-center gap-3 transition-all duration-500 group ${
+                  role === r.id
+                    ? "bg-black border-black text-white shadow-2xl shadow-black/20 scale-[1.02]"
+                    : "bg-[#f5f5f7] border-transparent text-gray-400 hover:bg-gray-200"
                 }`}
-            >
-              <div className={`mb-4 transition-colors ${role === r.id ? "text-blue-400" : "group-hover:text-white"}`}>{r.icon}</div>
-              <h3 className="text-sm font-black uppercase tracking-widest mb-1 italic">{r.label}</h3>
-              <p className="text-[10px] opacity-60 font-medium tracking-tight">{r.desc}</p>
-            </button>
-          ))}
+              >
+                <div className="p-2 transition-transform duration-500 group-hover:scale-110">
+                  <r.icon size={26} />
+                </div>
+                <div className="text-center">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest mb-1">{r.label}</h3>
+                  <p className="text-[8px] opacity-40 font-bold tracking-tight px-2">{r.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-12">
-          <button
+        <div className="pt-4">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={handleComplete}
             disabled={loading}
-            className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-full flex items-center justify-center gap-2 hover:bg-blue-400 hover:text-white transition-all disabled:opacity-50"
+            className="button-standard button-primary w-full shadow-2xl shadow-black/10 uppercase tracking-widest text-sm"
           >
-            {loading ? "Establishing Presence..." : "Finalize Handshake"}
-          </button>
+            {loading ? "Establishing Presence..." : <><ShieldCheck size={18} /> Finalize Protocol</>}
+          </motion.button>
         </div>
       </motion.div>
-    </div>
+    </AuthWrapper>
   );
 }
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="text-white">Connecting Neural Link...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">Synchronizing...</div>}>
       <GoogleSetupForm />
     </Suspense>
   );

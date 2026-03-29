@@ -40,21 +40,21 @@ function CallbackHandler() {
   }, [searchParams, setAuth, router]);
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f8f9fc] to-[#f2f2f7] flex flex-col items-center justify-center p-6 text-center">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
-        className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center border border-blue-500/20 mb-8"
+        className="w-24 h-24 bg-blue-500/5 rounded-full flex items-center justify-center border border-blue-500/10 mb-8"
       >
-        <ShieldCheck className="text-blue-400" size={40} />
+        <ShieldCheck className="text-elite-blue" size={40} />
       </motion.div>
-      <h1 className="text-white font-black uppercase tracking-[0.3em] text-sm mb-4">Neural Link Establishing</h1>
-      <p className="text-white/20 text-[10px] font-black uppercase tracking-widest italic">Decrypting Identity Tokens...</p>
+      <h1 className="text-black font-black uppercase tracking-[0.3em] text-sm mb-4">Neural Link Establishing</h1>
+      <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest italic">Decrypting Identity Tokens...</p>
       
       {/* Visual background noise for high-tech feel */}
-      <div className="fixed inset-0 pointer-events-none opacity-20">
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/10 blur-[120px] rounded-full"></div>
+      <div className="fixed inset-0 pointer-events-none opacity-40">
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full"></div>
       </div>
     </div>
   );
@@ -62,7 +62,7 @@ function CallbackHandler() {
 
 export default function AuthCallbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white/20 text-[10px] uppercase font-black italic">Channeling...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center text-gray-300 text-[10px] uppercase font-black italic">Channeling...</div>}>
       <CallbackHandler />
     </Suspense>
   );

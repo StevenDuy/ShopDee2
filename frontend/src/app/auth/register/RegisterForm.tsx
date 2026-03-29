@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -8,10 +6,10 @@ import { UserPlus, Globe, User, Store, Truck, Navigation, ShieldCheck, Eye, EyeO
 import Link from "next/link";
 
 const roles = [
-  { id: "customer", label: "Customer", icon: <User className="w-4 h-4" /> },
-  { id: "seller", label: "Seller", icon: <Store className="w-4 h-4" /> },
-  { id: "shipper", label: "Shipper", icon: <Truck className="w-4 h-4" /> },
-  { id: "linehaul", label: "Linehaul", icon: <Navigation className="w-4 h-4" /> }
+  { id: "customer", label: "Customer", icon: User, desc: "Shopping in the neural economy" },
+  { id: "seller", label: "Seller", icon: Store, desc: "Managing supply nodes" },
+  { id: "shipper", label: "Shipper", icon: Truck, desc: "Local logistics execution" },
+  { id: "linehaul", label: "Linehaul", icon: Navigation, desc: "Long-range fleet driving" }
 ];
 
 export default function RegisterForm() {
@@ -82,7 +80,7 @@ export default function RegisterForm() {
         email,
         password,
         role,
-        code,
+        otp: code,
       });
       // Legacy behavior: Redirect to login with success message
       router.push("/auth/login?registered=true");
@@ -96,48 +94,47 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleRegister} className="space-y-6">
       {/* Role Selection */}
-      <div className="space-y-2">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Select Your Identity</label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="space-y-4">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Select Your Identity</label>
+        <div className="grid grid-cols-2 gap-3">
           {roles.map((r) => (
             <button
               key={r.id}
               type="button"
               onClick={() => setRole(r.id)}
-              className={`p-4 rounded-3xl border flex flex-col items-center gap-2 transition-all duration-300 ${
+              className={`p-6 rounded-[2.5rem] border-2 flex flex-col items-center gap-3 transition-all duration-300 ${
                 role === r.id 
-                  ? "bg-white/10 border-white/20 text-white shadow-lg" 
-                  : "bg-white/[0.02] border-white/[0.05] text-white/30 hover:bg-white/[0.05]"
+                  ? "bg-black border-black text-white shadow-2xl shadow-black/20 scale-[1.02]" 
+                  : "bg-[#f5f5f7] border-transparent text-gray-400 hover:bg-gray-200"
               }`}
             >
-              <div className={role === r.id ? "text-blue-400" : ""}>{r.icon}</div>
               <span className="text-[10px] uppercase font-black tracking-widest">{r.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Full Name</label>
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Full Name</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-5 sm:px-8 py-4 sm:py-5 bg-white/[0.03] border border-white/[0.08] rounded-full font-medium text-sm text-white focus:outline-none focus:border-white/20 transition-all backdrop-blur-3xl"
+          className="input-standard"
           placeholder="John Doe"
           required
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Email Address</label>
-        <div className="relative">
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Email Address</label>
+        <div className="flex gap-2 items-center">
           <input
             type="email"
             value={email}
             disabled={isOtpSent}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-6 sm:px-8 py-4 sm:py-5 pr-[105px] sm:pr-32 bg-white/[0.03] border border-white/[0.08] rounded-full font-medium text-sm text-white focus:outline-none focus:border-white/20 transition-all backdrop-blur-3xl disabled:opacity-50"
+            className="input-standard flex-1 w-auto disabled:opacity-50"
             placeholder="your@email.com"
             required
           />
@@ -145,7 +142,7 @@ export default function RegisterForm() {
             type="button"
             onClick={handleSendOtp}
             disabled={otpLoading || countdown > 0}
-            className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 border border-white/10 rounded-full text-[8px] sm:text-[10px] font-black uppercase text-white hover:bg-white/20 transition-all disabled:opacity-30"
+            className="h-[60px] px-6 bg-black text-white rounded-[32px] text-[10px] font-black uppercase hover:bg-gray-800 transition-all disabled:opacity-30 whitespace-nowrap"
           >
             {otpLoading ? "..." : countdown > 0 ? `${countdown}s` : isOtpSent ? "Resend" : "Send Code"}
           </button>
@@ -153,13 +150,13 @@ export default function RegisterForm() {
       </div>
 
       {isOtpSent && (
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-          <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Verification Code</label>
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+          <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Verification Code</label>
           <input
             type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full px-6 sm:px-8 py-4 sm:py-5 bg-blue-500/5 border border-blue-400/20 rounded-full font-black text-center text-lg sm:text-xl tracking-[4px] sm:tracking-[10px] text-blue-400 focus:outline-none"
+            className="w-full h-[72px] bg-blue-50/50 border-2 border-elite-blue/10 rounded-[2.5rem] font-black text-center text-2xl tracking-[10px] text-elite-blue focus:outline-none focus:border-elite-blue/40"
             placeholder="000000"
             maxLength={6}
             required
@@ -167,30 +164,34 @@ export default function RegisterForm() {
         </motion.div>
       )}
 
-      <div className="space-y-1">
-        <label className="text-[10px] font-black uppercase tracking-widest text-white/30 px-6 italic">Password</label>
-        <div className="relative">
+      <div className="space-y-2">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 px-6">Password</label>
+        <div className="flex gap-2 items-center">
           <input
             type={showPw ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-6 sm:px-8 py-4 sm:py-5 pr-14 sm:pr-16 bg-white/[0.03] border border-white/[0.08] rounded-full font-medium text-sm text-white focus:outline-none focus:border-white/20 transition-all backdrop-blur-3xl"
+            className="input-standard flex-1 w-auto"
             placeholder="••••••••"
             required
           />
           <button type="button" onClick={() => setShowPw(s => !s)}
-            className="absolute right-5 sm:right-6 top-1/2 -translate-y-1/2 text-white/30 hover:text-white transition-colors">
-            {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            className="w-[60px] h-[60px] flex items-center justify-center bg-[#f5f5f7] rounded-[32px] text-gray-400 hover:text-black transition-colors shrink-0">
+            {showPw ? <EyeOff size={22} /> : <Eye size={22} />}
           </button>
         </div>
       </div>
 
       {(error || success) && (
         <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className={`text-[10px] font-black uppercase px-6 py-4 rounded-2xl text-center tracking-widest border ${
-            error ? "text-red-500 bg-red-500/10 border-red-500/20" : "text-green-500 bg-green-500/10 border-green-500/20"
+          initial={{ opacity: 0, x: 0 }}
+          animate={error ? { 
+            opacity: 1, 
+            x: [0, -10, 10, -10, 10, 0],
+            transition: { duration: 0.4 } 
+          } : { opacity: 1, x: 0 }}
+          className={`text-xs font-bold px-6 py-5 rounded-[2rem] text-center border ${
+            error ? "text-red-600 bg-red-50 border-red-100" : "text-green-600 bg-green-50 border-green-100"
           }`}
         >
           {error || success}
@@ -199,19 +200,19 @@ export default function RegisterForm() {
 
       <div className="pt-4">
         <motion.button 
-          whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.9)" }}
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           type="submit" 
           disabled={loading}
-          className="w-full py-5 bg-white text-black font-black uppercase tracking-widest text-sm rounded-full flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all disabled:opacity-50"
+          className="button-standard button-primary w-full shadow-2xl shadow-black/10 uppercase tracking-widest text-sm"
         >
-          {loading ? "Creating Ecosystem..." : <><UserPlus size={18} /> Join Ecosystem</>}
+          {loading ? "Creating Ecosystem..." : "Join Ecosystem"}
         </motion.button>
       </div>
 
-      <div className="text-center pt-8">
-         <p className="text-[10px] font-black uppercase tracking-widest text-white/20 italic">
-           Already a member? <Link href="/auth/login" className="text-white hover:underline underline-offset-4">Access Sandbox</Link>
+      <div className="text-center pt-10">
+         <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400">
+           Already a member? <Link href="/auth/login" className="text-black hover:underline underline-offset-8">Access Sandbox</Link>
          </p>
       </div>
     </form>

@@ -1,7 +1,15 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Model;
-class OtpVerification extends Model {
-    protected $fillable = ["email", "code", "purpose", "expires_at"];
-    protected $casts = ["expires_at" => "datetime"];
+
+class OtpVerification extends Model
+{
+    protected $fillable = ['email', 'otp', 'purpose', 'expires_at', 'is_used'];
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'is_used' => 'boolean',
+    ];
 }

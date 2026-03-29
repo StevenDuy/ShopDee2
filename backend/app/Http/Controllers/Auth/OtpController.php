@@ -25,7 +25,7 @@ class OtpController extends Controller {
         // 2. Pulse Generation
         $code = str_pad(rand(0, 999999), 6, "0", STR_PAD_LEFT);
         OtpVerification::where("email", $v["email"])->where("purpose", $v["purpose"])->delete();
-        OtpVerification::create(["email" => $v["email"], "code" => $code, "purpose" => $v["purpose"], "expires_at" => now()->addMinutes(15)]);
+        OtpVerification::create(["email" => $v["email"], "otp" => $code, "purpose" => $v["purpose"], "expires_at" => now()->addMinutes(15)]);
 
         // 3. Handshake Transmission
         try {

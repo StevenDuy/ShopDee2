@@ -46,11 +46,14 @@ class SocialController extends Controller {
             "role" => "required|in:customer,seller,shipper,linehaul"
         ]);
 
+        $role = \App\Models\Role::where("name", $v["role"])->first();
+        if (!$role) return response()->json(["message" => "Invalid role selected"], 422);
+
         $user = User::create([
             "name" => $v["name"],
             "email" => $v["email"],
             "password" => Hash::make(Str::random(16)), // Randomized password for OAuth nodes
-            "role" => $v["role"],
+            "role_id" => $role->id,
             "trust_score" => 100.0,
             "email_verified_at" => now(),
         ]);
