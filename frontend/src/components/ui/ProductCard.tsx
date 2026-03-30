@@ -2,60 +2,50 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { Package } from 'lucide-react';
+import Link from 'next/link';
 
 interface ProductCardProps {
-  id: number;
-  title: string;
-  price: number;
-  imageUrl: string;
-  category?: string;
-  index?: number;
+  product: any;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ 
-  title, 
-  price, 
-  imageUrl, 
-  category, 
-  index = 0 
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 30 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ 
-        duration: 0.8, 
-        delay: index * 0.1, 
-        ease: [0.16, 1, 0.3, 1] 
-      }}
-      whileHover={{ y: -4 }}
-      className="group w-full bg-white overflow-hidden"
-    >
-      <div className="relative aspect-square w-full bg-[#f5f5f7] rounded-[32px] overflow-hidden">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={title}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>
-        )}
-      </div>
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const heroImage = product.media?.find((m: any) => m.is_primary)?.url || 
+                    product.media?.[0]?.url;
 
-      <div className="mt-4 px-2">
-        {category && (
-          <span className="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1 block">
-            {category}
-          </span>
-        )}
-        <h3 className="text-sm font-semibold truncate text-black">{title}</h3>
-        <p className="text-base font-bold text-black mt-2">
-          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}
-        </p>
-      </div>
-    </motion.div>
+  return (
+    <Link href={`/customer/products/${product.id}`} className="block group">
+      <motion.div
+        whileHover={{ y: -8 }}
+        className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 hover:shadow-[0_45px_90px_-25px_rgba(0,0,0,0.12)] transition-all duration-500 shadow-sm"
+      >
+        <div className="aspect-[4/5] relative bg-gray-50 overflow-hidden">
+          {heroImage ? (
+            <img 
+              src={heroImage} 
+              alt={product.title} 
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center opacity-10">
+               <Package className="w-16 h-16 text-black" />
+            </div>
+          )}
+        </div>
+
+        <div className="p-8">
+          <h3 className="font-black text-xl text-black line-clamp-1 mb-2 group-hover:text-gray-600 transition-colors tracking-tight">
+            {product.title}
+          </h3>
+          
+          <div className="mt-4 flex flex-col">
+            <span className="text-[9px] font-black uppercase text-gray-300 tracking-[0.2em] mb-1">Asset Value</span>
+            <span className="text-2xl font-black text-black tracking-tighter">
+              {Number(product.base_price).toLocaleString()}đ
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </Link>
   );
 };

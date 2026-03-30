@@ -241,7 +241,7 @@ export default function AdminCategoriesPage() {
                                             [ ROOT LEVEL ]
                                         </div>
                                         {flatCategories
-                                            .filter(c => c.id !== editingCategory?.id && c.name.toLowerCase().includes(parentSearch.toLowerCase()))
+                                            .filter(c => c.parent_id === null && c.id !== editingCategory?.id && c.name.toLowerCase().includes(parentSearch.toLowerCase()))
                                             .map(c => (
                                                 <div 
                                                     key={c.id} 

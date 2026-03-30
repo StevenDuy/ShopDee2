@@ -14,6 +14,9 @@ Route::post("/auth/google/complete", "App\\Http\\Controllers\\Auth\\SocialContro
 
 Route::post("/action-logs", "App\\Http\\Controllers\\Api\\ActionLogController@store");
 Route::get("/p-check", function() { return response()->json(["status"=>"ok"]); });
+Route::get("/products", "App\\Http\\Controllers\\Api\\ProductController@index");
+Route::get("/banners/active", "App\\Http\\Controllers\\Api\\BannerController@activeBanners");
+
 
 // --- ADMIN API (Elite Governance) ---
 Route::group(['prefix' => 'admin'], function () {
