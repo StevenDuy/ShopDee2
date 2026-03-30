@@ -17,7 +17,7 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banners = Banner::with('product')->get();
+        $banners = Banner::with('product')->paginate(10);
         return response()->json($banners);
     }
 

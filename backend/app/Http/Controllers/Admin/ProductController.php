@@ -15,7 +15,11 @@ class ProductController extends Controller
     {
         $query = $request->get('q');
         
-        $products = Product::where('title', 'LIKE', "%{$query}%")
+        $products = Product::when($query, function($q) use ($query) {
+                return $q->where('title', 'LIKE', "%{$query}%");
+            }, function($q) {
+                return $q->latest()->limit(5);
+            })
             ->limit(10)
             ->get(['id', 'title', 'base_price']);
             

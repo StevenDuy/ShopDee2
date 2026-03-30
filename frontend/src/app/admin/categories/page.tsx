@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { PaginationControl } from "@/components/PaginationControl";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.shopdee.io.vn/api";
 
@@ -30,6 +31,7 @@ export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [flatCategories, setFlatCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({ current: 1, last: 1 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   
@@ -48,11 +50,16 @@ export default function AdminCategoriesPage() {
     fetchFlatCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (page: number = 1) => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API_URL}/admin/categories`);
-      setCategories(res.data);
+      const res = await axios.get(`${API_URL}/admin/categories?page=${page}`);
+      // Laravel Pagination returns { data: [...], current_page: X, last_page: Y }
+      setCategories(res.data.data);
+      setPagination({
+        current: res.data.current_page,
+        last: res.data.last_page
+      });
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -80,7 +87,7 @@ export default function AdminCategoriesPage() {
       }
       setIsModalOpen(false);
       resetForm();
-      fetchCategories();
+      fetchCategories(pagination.current);
       fetchFlatCategories();
     } catch (error: any) {
       const errorMsg = error.response?.data?.errors?.name 
@@ -94,7 +101,7 @@ export default function AdminCategoriesPage() {
     if (!confirm("Deleting this category will remove all sub-categories. Proceed?")) return;
     try {
       await axios.delete(`${API_URL}/admin/categories/${id}`);
-      fetchCategories();
+      fetchCategories(pagination.current);
       fetchFlatCategories();
     } catch (error) {
       console.error("Delete error:", error);
@@ -139,7 +146,7 @@ export default function AdminCategoriesPage() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-16 bg-gray-50 rounded-2xl animate-pulse" />
+              <div key={i} className="h-16 bg-gray-100 rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : (
@@ -154,6 +161,16 @@ export default function AdminCategoriesPage() {
                 </div>
             )}
           </div>
+        )}
+
+        {/* Categories Pagination */}
+        {!loading && (
+          <PaginationControl 
+            currentPage={pagination.current}
+            lastPage={pagination.last}
+            onPageChange={(page) => fetchCategories(page)}
+            className="mt-8"
+          />
         )}
       </div>
 
@@ -180,7 +197,7 @@ export default function AdminCategoriesPage() {
                   <div className="space-y-2 text-left">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Category Identification</label>
                     <input required type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} 
-                        className="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 md:py-5 focus:ring-2 focus:ring-black font-bold text-sm" placeholder="Node Name (e.g. Home Appliances)" />
+                        className="w-full bg-gray-100 border-none rounded-2xl px-6 py-4 md:py-5 focus:ring-2 focus:ring-black font-bold text-sm placeholder:text-gray-400" placeholder="Node Name (e.g. Home Appliances)" />
                   </div>
 
                   <div className="space-y-2 relative text-left">
@@ -189,7 +206,7 @@ export default function AdminCategoriesPage() {
                     <div className="relative group">
                         <input 
                             type="text" 
-                            className="w-full bg-gray-50 border-none rounded-2xl px-12 py-4 md:py-5 focus:ring-2 focus:ring-black font-bold text-sm"
+                            className="w-full bg-gray-100 border-none rounded-2xl px-12 py-4 md:py-5 focus:ring-2 focus:ring-black font-bold text-sm placeholder:text-gray-400"
                             placeholder="Select parent or start typing..."
                             value={isParentDropdownOpen ? parentSearch : formData.parent_name}
                             onFocus={() => {

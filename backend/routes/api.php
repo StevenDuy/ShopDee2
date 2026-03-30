@@ -34,3 +34,14 @@ Route::group(['prefix' => 'admin'], function () {
     Route::put('/categories/{id}', "App\\Http\\Controllers\\Admin\\CategoryController@update");
     Route::delete('/categories/{id}', "App\\Http\\Controllers\\Admin\\CategoryController@destroy");
 });
+
+// --- SELLER API (Market Operations) ---
+Route::group(['prefix' => 'seller'], function () {
+    // Products
+    Route::get('/products', "App\\Http\\Controllers\\Seller\\ProductController@index");
+    Route::post('/products', "App\\Http\\Controllers\\Seller\\ProductController@store");
+    Route::post('/media/upload', "App\\Http\\Controllers\\Seller\\ProductController@uploadMedia");
+    Route::put('/products/{id}', "App\\Http\\Controllers\\Seller\\ProductController@update");
+    Route::delete('/products/{id}', "App\\Http\\Controllers\\Seller\\ProductController@destroy");
+    Route::patch('/products/{id}/toggle', "App\\Http\\Controllers\\Seller\\ProductController@toggleStatus");
+});

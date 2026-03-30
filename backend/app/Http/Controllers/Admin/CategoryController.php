@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::root()->with('children')->get();
+        $categories = Category::root()->with('children')->paginate(10);
         return response()->json($categories);
     }
 
@@ -114,9 +114,33 @@ class CategoryController extends Controller
      */
     public function getList()
     {
-        // Chỉ lấy cấp 1 (Root) - Vì tối đa 2 cấp (Root -> Sub)
-        $categories = Category::root()->get();
+        // Get root categories with their children eager loaded
+        $roots = Category::root()->with('children')->get();
+        
+        $flatList = collect();
+        
+        foreach ($roots as $root) {
+            // Add Parent
+            $flatList->push([
+                'id' => $root->id,
+                'name' => $root->name,
+                'parent_id' => null,
+                'parent_name' => null,
+                'display_name' => $root->name
+            ]);
             
-        return response()->json($categories);
+            // Add Children
+            foreach ($root->children as $child) {
+                $flatList->push([
+                    'id' => $child->id,
+                    'name' => $child->name,
+                    'parent_id' => $child->parent_id,
+                    'parent_name' => $root->name,
+                    'display_name' => "{$root->name} > {$child->name}"
+                ]);
+            }
+        }
+            
+        return response()->json($flatList);
     }
 }
